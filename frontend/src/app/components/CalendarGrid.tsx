@@ -54,19 +54,19 @@ export default function CalendarGrid({
   });
 
   return (
-    <div className="w-full bg-white/60 backdrop-blur-lg border border-gray-200 shadow-2xl rounded-3xl p-10 text-sm font-medium space-y-6 transition-all duration-300 overflow-hidden">
+    <div className="w-full h-full  backdrop-blur-lg  border-gray-200 shadow-2xl rounded-3xl p-10 text-sm font-medium space-y-6 transition-all duration-300 overflow-hidden">
       {/* Header */}
-      <div className="flex justify-between items-center mb-2">
-        <button onClick={onPrevMonth} className="text-sm text-blue-600 underline">
+      <div className="flex justify-between items-center mb-2 p-4">
+        <button onClick={onPrevMonth} className="text-md text-blue-600 underline">
           ← Prev
         </button>
-        <span className="font-semibold text-gray-800 text-base">
+        <span className="font-semibold text-gray-800 text-xl">
           {new Date(viewYear, viewMonth).toLocaleString('default', {
             month: 'long',
             year: 'numeric',
           })}
         </span>
-        <button onClick={onNextMonth} className="text-sm text-blue-600 underline">
+        <button onClick={onNextMonth} className="text-md text-blue-600 underline">
           Next →
         </button>
       </div>
@@ -80,7 +80,7 @@ export default function CalendarGrid({
               setActiveCutoff(cutoff);
               onSelectCutoffRange(cutoff);
             }}
-            className={`px-3 py-1 text-xs rounded-full border transition-all duration-200 ${
+            className={`px-3 py-2 text-md rounded-full border transition-all duration-200 ${
               activeCutoff === cutoff
                 ? 'bg-blue-500 text-white border-blue-500'
                 : 'border-blue-500 text-blue-600 hover:bg-blue-50'
@@ -94,15 +94,15 @@ export default function CalendarGrid({
       </div>
 
       {/* Days Header */}
-      <div className="grid grid-cols-7 gap-2 text-xs text-center text-gray-400 font-medium mb-1">
+      <div className="grid grid-cols-7 gap-2 text-sm text-center text-gray-400 font-medium mb-1">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
           <div key={i}>{d}</div>
         ))}
       </div>
 
       {/* Calendar Grid */}
-      <div className="overflow-x-auto">
-        <div className="grid grid-cols-7 gap-1 sm:gap-2 min-w-[280px] sm:min-w-[420px]">
+      <div className="overflow-x-auto ">
+        <div className="grid grid-cols-7 text-2xl gap-1 sm:gap-2 min-w-[280px] sm:min-w-[420px]">
           {[...Array(weekdayIndex)].map((_, i) => (
             <div key={`pad-${i}`} />
           ))}
@@ -117,7 +117,7 @@ export default function CalendarGrid({
               <button
                 key={formatted}
                 onClick={() => toggleDate(date)}
-                className={`relative p-2 rounded-lg text-sm border transition-all duration-150 ${
+                className={`relative p-2 rounded-lg text-xl border transition-all duration-150 ${
                   isSelected ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-100'
                 }`}
               >
