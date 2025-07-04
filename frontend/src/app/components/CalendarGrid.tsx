@@ -12,6 +12,7 @@ type Props = {
   viewYear: number;
   onPrevMonth: () => void;
   onNextMonth: () => void;
+  defaultCutoff?: '1st' | '2nd' | 'all';
 };
 
 export default function CalendarGrid({
@@ -23,38 +24,46 @@ export default function CalendarGrid({
   viewYear,
   onPrevMonth,
   onNextMonth,
+  defaultCutoff,
 }: Props) {
   const [activeCutoff, setActiveCutoff] = useState<'1st' | '2nd' | 'all' | null>(null);
 
   useEffect(() => {
-    const today = new Date();
-    const isSameMonth = today.getFullYear() === viewYear && today.getMonth() === viewMonth;
-
-    if (isSameMonth) {
-      const day = today.getDate();
-      const cutoff = day <= 15 ? '1st' : '2nd';
-      setActiveCutoff(cutoff);
-      onSelectCutoffRange(cutoff); // auto-select those dates
+    if (defaultCutoff) {
+      setActiveCutoff(defaultCutoff);
+      onSelectCutoffRange(defaultCutoff);
     } else {
-      setActiveCutoff(null);
+      const today = new Date();
+      const isSameMonth = today.getFullYear() === viewYear && today.getMonth() === viewMonth;
+
+      if (isSameMonth) {
+        const day = today.getDate();
+        const inferredCutoff = day <= 15 ? '1st' : '2nd';
+        setActiveCutoff(inferredCutoff);
+        onSelectCutoffRange(inferredCutoff);
+      } else {
+        setActiveCutoff(null);
+      }
     }
-  }, [viewMonth, viewYear]);
+  }, [viewMonth, viewYear, defaultCutoff]);
 
   if (currentMonthDates.length === 0) return null;
 
   const firstDay = currentMonthDates[0];
   const weekdayIndex = firstDay.getDay();
 
+  // Optional: Highlight only selected dates that belong to the current cutoff
   const filteredSelectedDates = selectedDates.filter((dateStr) => {
     const date = new Date(dateStr);
     const day = date.getDate();
     if (activeCutoff === '1st') return day >= 1 && day <= 15;
     if (activeCutoff === '2nd') return day >= 16;
-    return true;
+    return true; // 'all' or no filter
   });
 
   return (
-    <div className="w-full h-full  backdrop-blur-lg  border-gray-200 shadow-2xl rounded-3xl p-10 text-sm font-medium space-y-6 transition-all duration-300 overflow-hidden">
+    <div className="w-full h-full backdrop-blur-lg border-gray-200 shadow-2xl rounded-3xl p-10 text-sm font-medium space-y-6 transition-all duration-300 overflow-hidden">
+      
       {/* Header */}
       <div className="flex justify-between items-center mb-2 p-4">
         <button onClick={onPrevMonth} className="text-md text-blue-600 underline">
@@ -71,7 +80,7 @@ export default function CalendarGrid({
         </button>
       </div>
 
-      {/* Cutoff buttons */}
+      {/* Cutoff Buttons */}
       <div className="flex justify-center gap-2 flex-wrap">
         {(['1st', '2nd', 'all'] as const).map((cutoff) => (
           <button
@@ -101,8 +110,9 @@ export default function CalendarGrid({
       </div>
 
       {/* Calendar Grid */}
-      <div className="overflow-x-auto ">
+      <div className="overflow-x-auto">
         <div className="grid grid-cols-7 text-2xl gap-1 sm:gap-2 min-w-[280px] sm:min-w-[420px]">
+          {/* Padding for first day */}
           {[...Array(weekdayIndex)].map((_, i) => (
             <div key={`pad-${i}`} />
           ))}
@@ -122,7 +132,9 @@ export default function CalendarGrid({
                 }`}
               >
                 {day}
-                <span className="absolute top-0 right-1 text-[10px] text-gray-400">{label}</span>
+                <span className="absolute top-0 right-1 text-[10px] text-gray-400">
+                  {label}
+                </span>
               </button>
             );
           })}
